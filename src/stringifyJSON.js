@@ -6,6 +6,29 @@ var stringifyJSON = function (obj) {
   var string = '';
 
   (function stringify(obj){
+
+  	if(obj instanceof Date){
+  		string += '"' + obj.toJSON() + '"';
+  		return;
+  	}
+  	if( typeof obj === 'function'){
+  		return;
+  	}
+  	if( typeof obj === 'string'){
+  		var tempString = obj;
+
+  		tempString.replace(/\\/g, "\\");
+  		tempString.replace(/\//g, "\\\/");
+  		tempString.replace(/'/g,"\\'").replace(/"/g,'\\"');
+  		string += '"' + obj + '"';
+  		return;
+
+  	}
+  	if( typeof obj === 'number'){
+  		string += obj;
+  		return
+  	}
+
   	if(!!Array.isArray(obj)) {
   		string += '[';
   		obj.forEach(function(el, index, array){
@@ -19,16 +42,15 @@ var stringifyJSON = function (obj) {
   		string += '{';
   		var arr = [];
   		for(key in obj){
-  			arr.push('"' + key + '"' + ':' + stringifyJSON(obj[key]));
+  			var ts = stringifyJSON(obj[key]);
+  			if(!!ts){
+  				arr.push('"' + key + '"' + ':' + ts));
+  			}
   		}
   		string += arr.join(", ");
   		string += '}';
   	} else {
-  		if(typeof obj === 'number'){
-  			string += obj;
-  		} else {
-  			string += '"' + obj + '"';
-  		}
+  		return;
   	}
   })(obj);
 
